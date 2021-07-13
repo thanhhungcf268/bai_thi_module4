@@ -8,8 +8,11 @@ import com.example.demo.service.ICountryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.validation.Valid;
 
 @RestController
 public class CityController {
@@ -41,7 +44,10 @@ private ICityService cityService;
     }
 
     @PostMapping
-    public ResponseEntity<City> save(@RequestBody City city){
+    public ResponseEntity<City> save(@Valid @RequestBody City city){
+//        if (bindingResult.hasFieldErrors()){
+//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//        }
         return new ResponseEntity<>(cityService.save(city),HttpStatus.CREATED);
     }
 

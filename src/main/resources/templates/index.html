@@ -29,6 +29,16 @@
         </tr>
     </table>
 </form>
+<!--thông báo-->
+<div class="modal fade" id="thong_bao" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: antiquewhite">
+                <h5 class="modal-title" style="color: green;background-color: aliceblue">Success !</h5>
+            </div>
+        </div>
+    </div>
+</div>
 <!--view-->
 <div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -94,6 +104,7 @@
                     <tr>
                         <th>Name</th>
                         <td><input type="text" id="createName"></td>
+                        <td><p class="error" style="color: red" id="name_error"></p></td>
                     </tr>
                     <tr>
                         <th>Quốc gia</th>
@@ -106,17 +117,24 @@
 
                     <tr>
                         <th>Diện tích</th>
-                        <td><input type="text" id="createarea"></td>
+                        <td><input type="number" value="0" id="createarea"></td>
+                        <td><p class="error" style="color: red" id="area_error"></p></td>
+
                     </tr>
                     <tr>
                         <th>Dân số</th>
                         <td>
-                            <input type="text" id="population">
+                            <input type="number" value="0" id="population">
+
                         </td>
+                        <td><p class="error" style="color: red" id="population_error"></p></td>
+
                     </tr>
                     <tr>
                         <th>GDP</th>
-                        <td><input type="text" id="createGDP"></td>
+                        <td><input type="number" value="0" id="createGDP"></td>
+                        <td><p class="error" style="color: red" id="gdp_error"></p></td>
+
                     </tr>
                     <tr>
                         <th>Giới thiệu</th>
@@ -244,15 +262,41 @@
             url: `/`,
             //su ly khi thanh cong
             success: function () {
+                $('#thong_bao').modal('show')
                 $('#createName').val("")
                 $('#createarea').val("")
                 $('#createGDP').val("")
                 $('#population').val("")
                 $('#description').val("")
                 $('#createModal').modal('hide');
+                setTimeout($('#thong_bao').modal('hide'),1000);
+                hideWarnings()
                 successHandler()
+
+
+            },
+            error : function (errors){
+                let error = $.parseJSON(errors.responseText);
+                printFieldErrors(error);
             }
         })
+    }
+
+    function printFieldErrors(errors){
+        for (const key in errors) {
+            // if (errors[key] == "must not be blank") {
+            //     document.getElementById(`${key}_error`).innerHTML = `* Required ${key} `;
+            // } else {
+                document.getElementById(`${key}_error`).innerHTML = `* ${errors[key]}`;
+            // }
+        }
+    }
+
+    function hideWarnings() {
+        document.getElementById("name_error").innerHTML = "";
+        document.getElementById("area_error").innerHTML = "";
+        document.getElementById("population_error").innerHTML = "";
+        document.getElementById("gdp_error").innerHTML = "";
     }
 
     function edit(u) {
@@ -323,6 +367,7 @@
                     $('#editGDP').val("")
                     $('#editdescription').val("")
                     $('#editModal').modal('hide');
+                    successHandler()
                 }
             })
 
@@ -360,8 +405,8 @@
                 for (let i = 0; i < data.length; i++) {
                     content1 += `<tr>
 <td>${i + 1}</td>
-            <td>${data[i].name}</td>
-            <td><a onclick="views()">${data[i].country.name}</a></td>
+            <td><a id="${data[i].id}" onclick="views(this.id)">${data[i].name}</a></td>
+            <td>${data[i].country.name}</td>
             <td><a data-bs-toggle="modal" data-bs-target="#editModal" onclick="edit(this.id)" id="${data[i].id}">Chỉnh sửa</a>/<a data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="deleteAdd(this.id)" id="${data[i].id}">Xóa</a>
             </td>
 </tr>`;}
