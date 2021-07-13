@@ -20,7 +20,7 @@
         </tr>
         <tr th:each="city,starts : ${citys}">
             <td th:text="${starts.count}"></td>
-            <td><a th:text="${city.name}" th:href="@{/view/__${city.id}__}"></a></td>
+            <td><a th:text="${city.name}" th:id="${city.id}"  onclick="views(this.id)"></a></td>
             <td th:text="${city.country.name}"></td>
             <td><a data-bs-toggle="modal" data-bs-target="#editModal" onclick="edit(this.id)" th:id="${city.id}">Chỉnh
                 sửa</a>/<a data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="deleteAdd(this.id)"
@@ -29,7 +29,57 @@
         </tr>
     </table>
 </form>
+<!--view-->
+<div class="modal fade" id="viewModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: antiquewhite">
+                <h5 class="modal-title" >View</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="background-color: floralwhite">
+                <table cellpadding="10">
+                    <tr>
+                        <td><input type="hidden" id="viewid"></td>
+                    </tr>
+                    <tr>
+                        <th>Name</th>
+                        <td><input type="text" id="viewName"></td>
+                    </tr>
+                    <tr>
+                        <th>Quốc gia</th>
+                        <td><select id="viewcountry">
 
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <th>Diện tích</th>
+                        <td><input type="text" id="viewarea"></td>
+                    </tr>
+                    <tr>
+                        <th>Dân số</th>
+                        <td>
+                            <input type="text" id="viewpopulation">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>GDP</th>
+                        <td><input type="text" id="viewGDP"></td>
+                    </tr>
+                    <tr>
+                        <th>Giới thiệu</th>
+                        <td><input type="text" id="viewdescription"></td>
+                    </tr>
+                </table>
+
+            </div>
+            <div class="modal-footer" style="background-color: floralwhite">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+<!--                <button id="updateButton" type="button" class="btn btn-primary">Save changes</button>-->
+            </div>
+        </div>
+    </div>
+</div>
 <!--create-->
 <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -311,7 +361,7 @@
                     content1 += `<tr>
 <td>${i + 1}</td>
             <td>${data[i].name}</td>
-            <td><a href="/view/${data[i].id}">${data[i].country.name}</a></td>
+            <td><a onclick="views()">${data[i].country.name}</a></td>
             <td><a data-bs-toggle="modal" data-bs-target="#editModal" onclick="edit(this.id)" id="${data[i].id}">Chỉnh sửa</a>/<a data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="deleteAdd(this.id)" id="${data[i].id}">Xóa</a>
             </td>
 </tr>`;}
@@ -321,6 +371,35 @@
         });
     }
 
+    function views(u){
+        let url = "/edit/" + u
+        $('#viewModal').modal('show')
+        $.ajax({
+            type : "GET",
+            url : url,
+            success : function (data){
+                $('#viewid').val(data.id)
+                $('#viewName').val(data.name)
+                // $('#editcountry').val(data.name)
+                $('#viewarea').val(data.area)
+                $('#viewpopulation').val(data.population)
+                $('#viewGDP').val(data.gdp)
+                $('#viewdescription').val(data.description)
+                $.ajax({
+                    type: "GET",
+                    url: `/country`,
+                    success: function (data) {
+                        let content = ``;
+                        for (let i = 0; i < data.length; i++) {
+                            content += `<option  value="${data[i].id}">${data[i].name}</option>`;
+                        }
+                        document.getElementById('viewcountry').innerHTML = content;
+                        // successHandler()
+                    }
+                })
+            }
+        })
+    }
 
 </script>
 </body>
