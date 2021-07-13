@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+<form>
+    <h1>Danh sách thành phố</h1>
+    <button type="button" onclick="createCity()" data-bs-toggle="modal" data-bs-target="#createModal">Thêm thành phố
+    </button>
+    <table id="list" class="table table-striped table-hover">
+        <tr>
+            <th>#</th>
+            <th>Thành phố</th>
+            <th>Quốc gia</th>
+            <th></th>
+        </tr>
+        <tr th:each="city,starts : ${citys}">
+            <td th:text="${starts.count}"></td>
+            <td><a th:text="${city.name}" th:href="@{/view/__${city.id}__}"></a></td>
+            <td th:text="${city.country.name}"></td>
+            <td><a data-bs-toggle="modal" data-bs-target="#editModal" onclick="edit(this.id)" th:id="${city.id}">Chỉnh
+                sửa</a>/<a data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="deleteAdd(this.id)"
+                           th:id="${city.id}">Xóa</a>
+            </td>
+        </tr>
+    </table>
+</form>
+
+<!--create-->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: aquamarine">
+                <h5 class="modal-title" id="createModalLabel">Add New City</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <h1> Chỉnh sửa thành phố</h1>
+            <div class="modal-body" style="background-color: aliceblue">
+                <table cellpadding="10">
+                    <tr>
+                        <th>Name</th>
+                        <td><input type="text" id="createName"></td>
+                    </tr>
+                    <tr>
+                        <th>Quốc gia</th>
+                        <td>
+                            <select id="country">
+
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Diện tích</th>
+                        <td><input type="text" id="createarea"></td>
+                    </tr>
+                    <tr>
+                        <th>Dân số</th>
+                        <td>
+                            <input type="text" id="population">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>GDP</th>
+                        <td><input type="text" id="createGDP"></td>
+                    </tr>
+                    <tr>
+                        <th>Giới thiệu</th>
+                        <td><input type="text" id="description"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer" style="background-color: aliceblue">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button onclick="addNewCity()" id="createButton" type="button" class="btn btn-success">Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--edit-->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: antiquewhite">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Product Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="background-color: floralwhite">
+                <table cellpadding="10">
+                    <tr>
+                        <td><input type="hidden" id="editId"></td>
+                    </tr>
+                    <tr>
+                        <th>Name</th>
+                        <td><input type="text" id="editName"></td>
+                    </tr>
+                    <tr>
+                        <th>Quốc gia</th>
+                        <td><select id="editcountry">
+
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <th>Diện tích</th>
+                        <td><input type="text" id="editarea"></td>
+                    </tr>
+                    <tr>
+                        <th>Dân số</th>
+                        <td>
+                            <input type="text" id="editpopulation">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>GDP</th>
+                        <td><input type="text" id="editGDP"></td>
+                    </tr>
+                    <tr>
+                        <th>Giới thiệu</th>
+                        <td><input type="text" id="editdescription"></td>
+                    </tr>
+                </table>
+
+            </div>
+            <div class="modal-footer" style="background-color: floralwhite">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="updateButton" type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--delete-->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: antiquewhite">
+                <h5 class="modal-title">Xóa thành phố</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <input type="text" hidden id="id_delete">
+            <div class="modal-footer" style="background-color: floralwhite">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">thoát</button>
+                <button id="deleteOk" type="button" class="btn btn-primary">xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>
+    function createCity() {
+        $.ajax({
+            type: "GET",
+            url: `/country`,
+            success: function (data) {
+                let content = ``;
+                for (let i = 0; i < data.length; i++) {
+                    content += `<option  value="${data[i].id}">${data[i].name}</option>`;
+                }
+                document.getElementById('country').innerHTML = content;
+            }
+        })
+    }
+
+    function addNewCity() {
+        let newCity = {
+            name: $('#createName').val(),
+            country: {
+                id: $('#country').val()
+            },
+            area: $('#createarea').val(),
+
+            gdp: $('#createGDP').val(),
+
+            population: $('#population').val(),
+
+            description: $('#description').val()
+        }
+        $.ajax({
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            type: "POST",
+            data: JSON.stringify(newCity),
+            // API
+            url: `/`,
+            //su ly khi thanh cong
+            success: function () {
+                $('#createName').val("")
+                $('#createarea').val("")
+                $('#createGDP').val("")
+                $('#population').val("")
+                $('#description').val("")
+                $('#createModal').modal('hide');
+                successHandler()
+            }
+        })
+    }
+
+    function edit(u) {
+        let id = u;
+        let url = "/edit/" + id
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function (data) {
+                $('#editId').val(data.id)
+                $('#editName').val(data.name)
+                // $('#editcountry').val(data.name)
+                $('#editarea').val(data.area)
+                $('#editpopulation').val(data.population)
+                $('#editGDP').val(data.gdp)
+                $('#editdescription').val(data.description)
+                $.ajax({
+                    type: "GET",
+                    url: `/country`,
+                    success: function (data) {
+                        let content = ``;
+                        for (let i = 0; i < data.length; i++) {
+                            content += `<option  value="${data[i].id}">${data[i].name}</option>`;
+                        }
+                        document.getElementById('editcountry').innerHTML = content;
+                        successHandler()
+                    }
+                })
+            }
+        })
+        event.defaultPrevented;
+    }
+
+    function deleteAdd(e) {
+        $('#id_delete').val(e)
+    }
+
+    $(document).ready(function () {
+        $('#updateButton').click(function (e) {
+            let newCity = {
+                id: $('#editId').val(),
+                name: $('#editName').val(),
+                country: {
+                    id: $('#editcountry').val()
+                },
+                area: $('#editpopulation').val(),
+
+                gdp: $('#editGDP').val(),
+
+                population: $('#editpopulation').val(),
+
+                description: $('#editdescription').val()
+            }
+            $.ajax({
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                type: "PUT",
+                data: JSON.stringify(newCity),
+                // API
+                url: `/`,
+                //su ly khi thanh cong
+                success: function () {
+                    $('#editName').val("")
+                    $('#editarea').val("")
+                    $('#editpopulation').val("")
+                    $('#editGDP').val("")
+                    $('#editdescription').val("")
+                    $('#editModal').modal('hide');
+                }
+            })
+
+        })
+    })
+
+    $(document).ready(function () {
+        $('#deleteOk').click(function (e) {
+            $.ajax({
+                type: "DELETE",
+                url: `/` + $('#id_delete').val(),
+                success: function () {
+                    $('#deleteModal').modal('hide')
+                    successHandler()
+                }
+
+
+            })
+        })
+    })
+
+    function successHandler() {
+        $.ajax({
+            type: "get",
+            url: "/list",
+            success: function (data) {
+                let content1 = `
+                                  <tr>
+            <th>#</th>
+            <th>Thành phố</th>
+            <th>Quốc gia</th>
+            <th></th>
+        </tr>
+       `;
+                for (let i = 0; i < data.length; i++) {
+                    content1 += `<tr>
+<td>${i + 1}</td>
+            <td>${data[i].name}</td>
+            <td><a href="/view/${data[i].id}">${data[i].country.name}</a></td>
+            <td><a data-bs-toggle="modal" data-bs-target="#editModal" onclick="edit(this.id)" id="${data[i].id}">Chỉnh sửa</a>/<a data-bs-toggle="modal" data-bs-target="#deleteModal" onclick="deleteAdd(this.id)" id="${data[i].id}">Xóa</a>
+            </td>
+</tr>`;}
+                document.getElementById('list').innerHTML = content1;
+            }
+
+        });
+    }
+
+
+</script>
+</body>
+</html>
